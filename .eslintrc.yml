@@ -2,6 +2,9 @@ parserOptions:
   ecmaVersion: 2015
   sourceType: module
 
+rules:
+  no-multi-spaces: 0
+
 env:
   es6: true
   browser: true
