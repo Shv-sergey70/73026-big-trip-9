@@ -8,25 +8,17 @@ import TripPointEdit from './components/trip-point-edit';
 import {generateTripPointData} from "./data/trip-point-data";
 import {Position, renderElementIn} from "./util";
 import TripDaysList from "./components/trip-days-list";
+import NoTripPoints from "./components/no-trip-points";
 
-const tripPoints = new Array(4).fill(``).map(generateTripPointData).sort();
+const tripPoints = new Array(7).fill(``).map(generateTripPointData).sort();
 
 const tripMainBlock     = document.querySelector(`.trip-main`);
 const tripControlsBlock = document.querySelector(`.trip-controls`);
 const menuHeading       = tripControlsBlock.querySelector(`h2`);
 const tripEventsSection = document.querySelector(`.trip-events`);
 
-renderElementIn(tripMainBlock, new TripInfo({
-  cities: Array.from(new Set(tripPoints.map((tripPoint) => tripPoint.city))),
-  minStartDate: Math.min.call(null, ...tripPoints.map((tripPoint) => tripPoint.dateStart)),
-  maxFinishDate: Math.max.call(null, ...tripPoints.map((tripPoint) => tripPoint.dateFinish)),
-  totalCost: tripPoints.reduce((accumulator, tripPoint) => accumulator + tripPoint.cost + tripPoint.additions.filter((addition) => addition.isApplied).reduce((acc, addition) => acc + addition.cost, 0), 0)
-}).getElement(), Position.AFTERBEGIN);
-
 renderElementIn(menuHeading, new Menu().getElement(), Position.AFTEREND);
 renderElementIn(tripControlsBlock, new Filter().getElement());
-
-renderElementIn(tripEventsSection, new Sort().getElement());
 
 const tripDaysList = new TripDaysList().getElement();
 
@@ -52,8 +44,18 @@ const renderDay = (dayTimestamp, groupedTripPoints, dayNumber) => {
     const tripPoint = new TripPoint(tripPointData);
     const tripPointEdit = new TripPointEdit(tripPointData);
 
-    tripPoint.getElement().querySelector(`button.event__rollup-btn`).addEventListener(`click`, () => dayItemTripList.replaceChild(tripPointEdit.getElement(), tripPoint.getElement()));
-    tripPointEdit.getElement().querySelector(`form`).addEventListener(`click`, () => dayItemTripList.replaceChild(tripPoint.getElement(), tripPointEdit.getElement()));
+    const onEscKeydown = (evt) => {
+      if ((evt.key === `Esc` || evt.key === `Escape`)) {
+        dayItemTripList.replaceChild(tripPoint.getElement(), tripPointEdit.getElement());
+        document.removeEventListener(`keydown`, onEscKeydown);
+      }
+    };
+
+    tripPoint.getElement().querySelector(`button.event__rollup-btn`).addEventListener(`click`, () => {
+      dayItemTripList.replaceChild(tripPointEdit.getElement(), tripPoint.getElement());
+      document.addEventListener(`keydown`, onEscKeydown);
+    });
+    tripPointEdit.getElement().querySelector(`form`).addEventListener(`submit`, () => dayItemTripList.replaceChild(tripPoint.getElement(), tripPointEdit.getElement()));
 
     renderElementIn(dayItemTripList, tripPoint.getElement());
   };
@@ -63,6 +65,21 @@ const renderDay = (dayTimestamp, groupedTripPoints, dayNumber) => {
   renderElementIn(tripDaysList, dayItem.getElement());
 };
 
-[...getEventsByDayMap().entries()].forEach(([dayTimestamp, groupedTripPoints], i) => renderDay(dayTimestamp, groupedTripPoints, i + 1));
+if (tripPoints.length === 0) {
+  document.querySelector(`.trip-main__event-add-btn`).disabled = true;
+  renderElementIn(tripEventsSection, new NoTripPoints().getElement());
+} else {
+  renderElementIn(tripMainBlock, new TripInfo({
+    cities: Array.from(new Set(tripPoints.map((tripPoint) => tripPoint.city))),
+    minStartDate: Math.min.call(null, ...tripPoints.map((tripPoint) => tripPoint.dateStart)),
+    maxFinishDate: Math.max.call(null, ...tripPoints.map((tripPoint) => tripPoint.dateFinish)),
+    totalCost: tripPoints.reduce((accumulator, tripPoint) => accumulator + tripPoint.cost + tripPoint.additions.filter((addition) => addition.isApplied).reduce((acc, addition) => acc + addition.cost, 0), 0)
+  }).getElement(), Position.AFTERBEGIN);
 
-renderElementIn(tripEventsSection, tripDaysList);
+  renderElementIn(tripEventsSection, new Sort().getElement());
+
+  [...getEventsByDayMap().entries()].forEach(([dayTimestamp, groupedTripPoints], i) => renderDay(dayTimestamp, groupedTripPoints, i + 1));
+
+  renderElementIn(tripEventsSection, tripDaysList);
+
+}
