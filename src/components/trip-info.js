@@ -1,25 +1,13 @@
-import {createElement} from "../util";
+import AbstractComponent from "./abstract-component";
 
-export default class TripInfo {
+export default class TripInfo extends AbstractComponent {
   constructor({cities, minStartDate, maxFinishDate, totalCost}) {
+    super();
+
     this._cities = cities;
     this._minStartDate = minStartDate;
     this._maxFinishDate = maxFinishDate;
     this._totalCost = totalCost;
-
-    this._element = null;
-  }
-
-  getElement() {
-    if (this._element === null) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 
   getTemplate() {

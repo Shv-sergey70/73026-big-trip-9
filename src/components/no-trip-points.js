@@ -1,22 +1,6 @@
-import {createElement} from "../util";
+import AbstractComponent from "./abstract-component";
 
-export default class NoTripPoints {
-  constructor() {
-    this._element = null;
-  }
-
-  getElement() {
-    if (this._element === null) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
-  }
-
+export default class NoTripPoints extends AbstractComponent {
   getTemplate() {
     return `<p class="trip-events__msg">Click New Event to create your first point</p>`;
   }

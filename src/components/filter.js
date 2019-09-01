@@ -1,22 +1,6 @@
-import {createElement} from "../util";
+import AbstractComponent from "./abstract-component";
 
-export default class Filter {
-  constructor() {
-    this._element = null;
-  }
-
-  getElement() {
-    if (this._element === null) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
-  }
-
+export default class Filter extends AbstractComponent{
   getTemplate() {
     return `<form class="trip-filters" action="#" method="get">
               <div class="trip-filters__filter">

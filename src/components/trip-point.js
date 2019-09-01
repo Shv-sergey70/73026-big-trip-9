@@ -1,27 +1,16 @@
-import {createElement, getRandomInt} from "../util";
+import {getRandomInt} from "../util";
+import AbstractComponent from "./abstract-component";
 
-export default class TripPoint {
+export default class TripPoint extends AbstractComponent {
   constructor({icon, description, dateStart, dateFinish, cost, additions}) {
+    super();
+
     this._icon = icon;
     this._description = description;
     this._dateStart = dateStart;
     this._dateFinish = dateFinish;
     this._cost = cost;
     this._additions = additions;
-
-    this._element = null;
-  }
-
-  getElement() {
-    if (this._element === null) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 
   getTemplate() {

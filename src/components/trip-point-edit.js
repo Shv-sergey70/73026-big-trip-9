@@ -1,7 +1,10 @@
 import {createElement} from "../util";
+import AbstractComponent from "./abstract-component";
 
-export default class TripPointEdit {
+export default class TripPointEdit extends AbstractComponent {
   constructor({icon, description, dateStart, dateFinish, cost, additions, photos, isFavorite}) {
+    super();
+
     this._icon = icon;
     this._description = description;
     this._dateStart = dateStart;
@@ -10,20 +13,6 @@ export default class TripPointEdit {
     this._additions = additions;
     this._photos = photos;
     this._isFavorite = isFavorite;
-
-    this._element = null;
-  }
-
-  getElement() {
-    if (this._element === null) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 
   getTemplate() {
