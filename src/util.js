@@ -7,6 +7,12 @@ export const createElement = (template) => {
   return div.firstChild;
 };
 
+export const sortType = {
+  DEFAULT: `event`,
+  TIME: `time`,
+  PRICE: `price`
+};
+
 export const Position = {
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`,

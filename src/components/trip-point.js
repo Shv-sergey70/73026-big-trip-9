@@ -27,7 +27,7 @@ export default class TripPoint extends AbstractComponent {
                     &mdash;
                     <time class="event__end-time" datetime="2019-03-18T13:35">${this._fillZero(new Date(this._dateFinish).getHours())}:${this._fillZero(new Date(this._dateFinish).getMinutes())}</time>
                   </p>
-                  <p class="event__duration">1H 30M</p>
+                  <p class="event__duration">1H 30M ${(this._dateFinish - this._dateStart)/10000}</p>
                 </div>
             
                 <p class="event__price">
