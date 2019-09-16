@@ -6,6 +6,7 @@ import TripPoint from "../components/trip-point";
 import TripPointEdit from "../components/trip-point-edit";
 import TripDaysList from "../components/trip-days-list";
 import NoTripPoints from "../components/no-trip-points";
+import PointController from "./point";
 
 export default class TripController {
   constructor(container, tripPoints) {
@@ -14,6 +15,8 @@ export default class TripController {
     this._tripDaysList = new TripDaysList();
 
     this._tripMainBlock = document.querySelector(`.trip-main`);
+
+    this._onDataChange = this._onDataChange.bind(this);
   }
 
   init() {
@@ -83,30 +86,14 @@ export default class TripController {
     const dayItem = new TripDay({dayTimestamp, dayNumber});
     const dayItemTripList = dayItem.getElement().querySelector(`.trip-events__list`);
 
-    const renderTripPoint = (tripPointData) => {
-      const tripPoint = new TripPoint(tripPointData);
-      const tripPointEdit = new TripPointEdit(tripPointData);
-
-      const onEscKeydown = (evt) => {
-        if ((evt.key === `Esc` || evt.key === `Escape`)) {
-          dayItemTripList.replaceChild(tripPoint.getElement(), tripPointEdit.getElement());
-          document.removeEventListener(`keydown`, onEscKeydown);
-        }
-      };
-
-      tripPoint.getElement().querySelector(`button.event__rollup-btn`).addEventListener(`click`, () => {
-        dayItemTripList.replaceChild(tripPointEdit.getElement(), tripPoint.getElement());
-        document.addEventListener(`keydown`, onEscKeydown);
-      });
-      tripPointEdit.getElement().querySelector(`form`).addEventListener(`submit`, () => dayItemTripList.replaceChild(tripPoint.getElement(), tripPointEdit.getElement()));
-
-      renderElementIn(dayItemTripList, tripPoint.getElement());
-    };
-
-    groupedTripPoints.forEach(renderTripPoint);
+    groupedTripPoints.forEach((tripPoint) => this._renderTripPoint(dayItemTripList, tripPoint));
 
     renderElementIn(this._tripDaysList.getElement(), dayItem.getElement());
   }
+
+  _renderTripPoint(dayItemTripList, tripPointData) {
+    new PointController(dayItemTripList, tripPointData, this._onDataChange).init();
+  };
 
   _isNoTripPoints() {
     return this._tripPoints.length === 0;
@@ -114,5 +101,9 @@ export default class TripController {
 
   _renderTripPointsByDefault() {
     [...this._getEventsByDayMap().entries()].forEach(([dayTimestamp, groupedTripPoints], i) => this._renderDay(dayTimestamp, groupedTripPoints, i + 1));
+  }
+
+  _onDataChange(newData, oldData) {
+
   }
 }

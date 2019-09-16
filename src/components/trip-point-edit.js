@@ -1,5 +1,6 @@
-import {createElement} from "../util";
 import AbstractComponent from "./abstract-component";
+import {availableEvents, getDescription} from "../data/trip-point-data";
+import {EXTENSION_PNG, ICONS_PATH} from "../util";
 
 export default class TripPointEdit extends AbstractComponent {
   constructor({icon, description, dateStart, dateFinish, cost, additions, photos, isFavorite}) {
@@ -13,6 +14,9 @@ export default class TripPointEdit extends AbstractComponent {
     this._additions = additions;
     this._photos = photos;
     this._isFavorite = isFavorite;
+
+    this._setEventTypesHandler();
+    this._setDestinationTypeHandler();
   }
 
   getTemplate() {
@@ -22,7 +26,7 @@ export default class TripPointEdit extends AbstractComponent {
                   <div class="event__type-wrapper">
                     <label class="event__type  event__type-btn" for="event-type-toggle-1">
                       <span class="visually-hidden">Choose event type</span>
-                      <img class="event__type-icon" width="17" height="17" src="img/icons/${this._icon}" alt="Event type icon">
+                      <img class="event__type-icon" width="17" height="17" src="${ICONS_PATH}${this._icon}${EXTENSION_PNG}" alt="Event type icon">
                     </label>
                     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
             
@@ -173,5 +177,26 @@ export default class TripPointEdit extends AbstractComponent {
   _getFormattedDate(timestamp) {
     const date = new Date(timestamp);
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+  }
+
+  _setEventTypesHandler() {
+    this.getElement().querySelectorAll(`input[name='event-type']`).forEach((eventTypeInput) => {
+      eventTypeInput.addEventListener(`change`, (evt) => {
+        const foundEvent = availableEvents.find((availableEvent) => availableEvent.type === evt.target.value);
+
+        if (foundEvent !== undefined) {
+          this.getElement().querySelector(`.event__type-output`).textContent = foundEvent.placeholder;
+          this.getElement().querySelector(`.event__type-icon`).src = `${ICONS_PATH}${foundEvent.type}${EXTENSION_PNG}`;
+        }
+      });
+    });
+  }
+
+  _setDestinationTypeHandler() {
+    this.getElement().querySelectorAll(`input[name="event-destination"]`).forEach((destinationInput) => {
+      destinationInput.addEventListener(`change`, (evt) => {
+        evt.target.closest(`form`).querySelector(`.event__destination-description`).textContent = getDescription();
+      });
+    });
   }
 }

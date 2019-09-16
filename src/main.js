@@ -2,7 +2,7 @@ import Menu from './components/menu';
 import Filter from './components/filter';
 import {generateTripPointData} from "./data/trip-point-data";
 import {Position, renderElementIn} from "./util";
-import TripController from "./controllers/trip-controller";
+import TripController from "./controllers/trip";
 
 const tripPoints = new Array(7).fill(``).map(generateTripPointData).sort();
 

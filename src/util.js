@@ -38,3 +38,6 @@ export const renderElementIn = (component, element, position = Position.BEFOREEN
     }
   }
 };
+
+export const ICONS_PATH = `img/icons/`;
+export const EXTENSION_PNG = `.png`;
